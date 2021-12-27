@@ -13,6 +13,18 @@ namespace Examples
             Soldier soldier = new Soldier(10, 1);
             int life = soldier.GetLife();
             Console.WriteLine(life); // 10
+
+            Soldier s2 = new Soldier();
+            Console.WriteLine(s2.GetLife() + " " + s2.Name);
+            //s2.Name = "XXX";
+
+            Fighter f = new Soldier();
+            Console.WriteLine((f as Soldier).Name);
+            
+            Soldier s3 = (Soldier)f;
+            Console.WriteLine(s3.Name);
+
+            Chair chair = new Chair();
         }
     }
 
@@ -35,7 +47,21 @@ namespace Examples
 
     class Soldier : Fighter
     {
-        public Soldier(int life, int attack) : base(life, attack) { }
+        private string _name;
+        public string Name { get { return _name; } }
+        public Soldier() : base(10, 1) 
+        {
+            _name = "Soldier";
+        }
+
+        public Soldier(int life, int attack) : base(CalcLife(life), attack) 
+        {
+
+         
+        
+        }
+
+        private static int CalcLife(int life) { return (life + 5 * 2);  }
     }
     #endregion
 
@@ -47,12 +73,33 @@ namespace Examples
             Console.WriteLine("Wood");
         }
     }
+
     class Chair
     {
-        private ChairLeg _leg;
-        public Chair(ChairLeg leg)
+        // <"Leg1", new ChairLeg()>
+        
+        private Dictionary<string, ChairLeg> Legs;
+        private IDictionary<string, ChairLeg> Legs2;
+
+        private ChairLeg[] _legs;
+        public Chair()
         {
-            _leg = leg;
+            _legs = new ChairLeg[] { new ChairLeg(), new ChairLeg(), new ChairLeg(), new ChairLeg() };
+            
+            Legs = new Dictionary<string, ChairLeg>();
+            
+            Legs.Add("Leg1", new ChairLeg());
+
+            //Legs2 = new IDictionary<string, ChairLeg>(); // can't do it
+            Legs2 = new Dictionary<string, ChairLeg>();
+            Legs2.Add("Leg1", new ChairLeg());
+
+            DinnerTable dinnerTable = new DinnerTable();
+        }
+
+        public Chair(ChairLeg[] legs)
+        {
+            _legs = legs;
         }
     }
 
@@ -61,6 +108,10 @@ namespace Examples
     #region Aggregation And Association
     class ChairA
     {
+        public ChairA()
+        {
+            Console.WriteLine("New ChairA");
+        }
         public void Material()
         {
             Console.WriteLine("Wood");
@@ -68,9 +119,16 @@ namespace Examples
     }
     class DinnerTable
     {
-        private ChairA _chair; // aggregation
-        public DinnerTable(ChairA chair) // association
+        private ChairA _chair = new ChairA(); // aggregation means that we don't instantiate on the default / overloaded
+        // constructor
+        public DinnerTable()
         {
+            Console.WriteLine("Inside DinnerTable ctor");
+        }
+        public DinnerTable(ChairA chair) // association
+            // we need to instatiate
+        {
+            Console.WriteLine("Inside DinnerTable ctor");
             _chair = chair;
         }
     }
